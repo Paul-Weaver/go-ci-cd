@@ -3,7 +3,8 @@ FROM golang:1.16 AS builder
 
 WORKDIR /app
 
-# Copy the Go application code
+# Copy the Go application code and module files
+COPY go.mod ./
 COPY main.go .
 
 # Build the application
