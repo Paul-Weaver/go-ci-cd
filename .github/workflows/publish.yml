@@ -20,7 +20,7 @@ jobs:
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         ## the name of our image
-        name: paulweaver123/ci-cd
+        name: paulweaver101/ci-cd
         ## Here we pass in our Docker Username
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         ## and our Docker password which 
