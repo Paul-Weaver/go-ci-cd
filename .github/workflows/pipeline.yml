@@ -68,4 +68,4 @@ jobs:
         name: paulweaver101/ci-cd
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        tags: "${{ github.sha }}"
+        tags: "latest,${{ github.sha }}"

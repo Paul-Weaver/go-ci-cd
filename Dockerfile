@@ -1,17 +1,21 @@
-# Start with the golang base image as the builder stage
+# Use official Golang image as a builder
 FROM golang:1.17 AS builder
 
+# Set working directory
 WORKDIR /app
 
-# Copy the Go application code and module files
+# Copy Go mod and source code to the container
 COPY go.mod ./
 COPY main.go .
 
-# Build the application
+# Build the Go app to a binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/myapp .
 
-# Second stage, for the runtime
-FROM alpine:latest
+# Use Alpine Linux for the runtime stage
+FROM alpine:latest  
+
+# Expose port 8080 for the application
+EXPOSE 8080
 
 # Copy the binary from the builder stage
 COPY --from=builder /app/myapp /app/myapp
