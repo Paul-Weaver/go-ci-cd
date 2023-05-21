@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # Checks out your repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     # Sets up Go environment for use in actions
     - name: Set up Go
       uses: actions/setup-go@v2
@@ -44,7 +44,7 @@ jobs:
         go-version: ${{ matrix.go-version }}
     # Checks out your repository under $GITHUB_WORKSPACE
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     # Runs the tests
     - name: Test
       run: go test ./...
@@ -60,7 +60,7 @@ jobs:
     - uses: actions/checkout@v3
     # Builds the Docker image
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag paulweaver101/ci-cd:${{ github.sha }}
     # Publishes the Docker image to DockerHub
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v4
@@ -68,3 +68,4 @@ jobs:
         name: paulweaver101/ci-cd
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+        tags: "${{ github.sha }}"
