@@ -17,7 +17,7 @@ jobs:
 
     ## Publishes our image to Docker Hub 😎
     - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v4
       with:
         ## the name of our image
         name: paulweaver101/ci-cd
