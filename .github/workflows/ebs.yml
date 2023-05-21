@@ -24,4 +24,4 @@ jobs:
         run: |
           aws elasticbeanstalk update-environment \
             --environment-name Golang-ci-cd-env \
-            --version-label "ver-${{ github.sha }}"
+            --version-label "1"
