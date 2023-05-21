@@ -1,0 +1,27 @@
+# Name of this workflow
+name: Deploy to Elastic Beanstalk
+
+# This workflow gets triggered upon a push event on the main branch
+on:
+  push:
+    branches: [ main ]
+
+# Jobs are the tasks that this workflow will run
+jobs:
+  # Deploy job, updates Elastic Beanstalk environment
+  deploy:
+    name: Deploy to Elastic Beanstalk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS__ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Update Elastic Beanstalk environment
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name Golang-ci-cd-env \
+            --version-label "ver-${{ github.sha }}"
