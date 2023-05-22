@@ -1,10 +1,10 @@
 # Name of this workflow
-name: CI/CD Pipeline
+name: Go Lint & Test
 
-# This workflow gets triggered upon a push event on the main branch
+# This workflow gets triggered upon a push event on any branch
 on:
   push:
-    branches: [ main ]
+    branches: [ '**' ]
 
 # Jobs are the tasks that this workflow will run
 jobs:
@@ -48,24 +48,4 @@ jobs:
     # Runs the tests
     - name: Test
       run: go test ./...
-
-  # Build and Publish job, builds the Docker image and pushes it to DockerHub
-  build-and-publish:
-    name: Build and Publish Docker Image
-    # This job depends on the lint and test jobs
-    needs: [lint, test]
-    runs-on: ubuntu-latest
-    steps:
-    # Checks out your repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v3
-    # Builds the Docker image
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag paulweaver101/ci-cd:${{ github.sha }}
-    # Publishes the Docker image to DockerHub
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v4
-      with:
-        name: paulweaver101/ci-cd
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-        tags: "latest,${{ github.sha }}"
+   
