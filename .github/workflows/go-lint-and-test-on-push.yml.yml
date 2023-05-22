@@ -49,5 +49,5 @@ jobs:
       uses: actions/checkout@v3
     # Runs the tests
     - name: Test
-      run: go test ./...
+      run: go test -v ./...
    
