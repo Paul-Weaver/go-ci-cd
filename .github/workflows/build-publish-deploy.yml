@@ -4,8 +4,8 @@ name: Build, Publish and Deploy
 # This workflow gets triggered upon a pull request is closed (merged) event
 on:
   pull_request:
-    types: [ closed ]
-    branches: [ main ]
+    types: [closed]
+    branches: [main]
 
 # Jobs are the tasks that this workflow will run
 jobs:
@@ -15,19 +15,19 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
-    # Checks out your repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v3
-    # Builds the Docker image
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag paulweaver101/ci-cd:${{ github.sha }}
-    # Publishes the Docker image to DockerHub
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@v4
-      with:
-        name: paulweaver101/ci-cd
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-        tags: "latest,${{ github.sha }}"
+      # Checks out your repository under $GITHUB_WORKSPACE
+      - uses: actions/checkout@v3
+      # Builds the Docker image
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag paulweaver101/ci-cd:${{ github.sha }}
+      # Publishes the Docker image to DockerHub
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: paulweaver101/ci-cd
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          tags: "latest,${{ github.sha }}"
 
   # Deploy job, updates Elastic Beanstalk environment
   deploy:
@@ -47,4 +47,21 @@ jobs:
           aws elasticbeanstalk update-environment \
             --environment-name Golang-ci-cd-env \
             --version-label "1"
+
+  # Smoke Test job, checks if the application is running
+  smoke-test:
+    name: Smoke Test
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for environment to start
+        run: sleep 120  # Adjust the duration based on the startup time of your Elastic Beanstalk environment
+
+      - name: Run smoke test
+        run: |
+          status_code=$(curl --silent --output /dev/null --write-out "%{http_code}" http://golang-ci-cd-env.eba-6xrrsqzk.us-east-1.elasticbeanstalk.com/)
+          if [ $status_code -ne 200 ]; then
+            echo "Smoke test failed with HTTP status code $status_code"
+            exit 1
+          fi
 
