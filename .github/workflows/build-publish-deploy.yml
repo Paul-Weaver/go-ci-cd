@@ -1,0 +1,50 @@
+# Name of this workflow
+name: Build, Publish and Deploy
+
+# This workflow gets triggered upon a pull request is closed (merged) event
+on:
+  pull_request:
+    types: [ closed ]
+    branches: [ main ]
+
+# Jobs are the tasks that this workflow will run
+jobs:
+  # Build and Publish job, builds the Docker image and pushes it to DockerHub
+  build-and-publish:
+    name: Build and Publish Docker Image
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+    # Checks out your repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v3
+    # Builds the Docker image
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag paulweaver101/ci-cd:${{ github.sha }}
+    # Publishes the Docker image to DockerHub
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v4
+      with:
+        name: paulweaver101/ci-cd
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        tags: "latest,${{ github.sha }}"
+
+  # Deploy job, updates Elastic Beanstalk environment
+  deploy:
+    name: Deploy to Elastic Beanstalk
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS__ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Update Elastic Beanstalk environment
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name Golang-ci-cd-env \
+            --version-label "1"
+
