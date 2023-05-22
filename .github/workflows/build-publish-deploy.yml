@@ -58,8 +58,11 @@ jobs:
         run: sleep 120  # Adjust the duration based on the startup time of your Elastic Beanstalk environment
 
       - name: Run smoke test
+        env:
+          AWS_APP_URL: ${{ secrets.AWS_APP_URL }}
         run: |
-          status_code=$(curl --silent --output /dev/null --write-out "%{http_code}" http://golang-ci-cd-env.eba-6xrrsqzk.us-east-1.elasticbeanstalk.com/)
+          sleep 60  # Wait for the application to start
+          status_code=$(curl --silent --output /dev/null --write-out "%{http_code}" $AWS_APP_URL)
           if [ $status_code -ne 200 ]; then
             echo "Smoke test failed with HTTP status code $status_code"
             exit 1
