@@ -27,7 +27,7 @@ To run the Go server locally, you'll need Docker installed on your machine. Use 
 ```bash
 docker build -t ci-cd . 
 docker run -p 8080:8080 ci-cd
-
+```
 ## Accessing the Server
 
 You should now be able to access the server at `localhost:8080` and see the "Hello, world!" message.
