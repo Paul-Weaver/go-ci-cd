@@ -1,24 +1,28 @@
-# Use official Golang image as a builder
-FROM golang:1.17 AS builder
+# Using golang:1.21-alpine as the base image for the builder stage
+FROM golang:1.21-alpine AS builder
 
-# Set working directory
+# Set the working directory inside the container to /app
 WORKDIR /app
 
-# Copy Go mod and source code to the container
-COPY go.mod ./
-COPY main.go .
+# Copy the go.mod and main.go files into the /app directory
+COPY go.mod main.go ./
 
-# Build the Go app to a binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/myapp .
+# Compile the application to a binary called 'main'.
+# CGO_ENABLED=0 disables CGO for static building. GOOS=linux ensures compatibility.
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
-# Use Alpine Linux for the runtime stage
-FROM alpine:latest  
+# Start a new stage from alpine:3.19 for a smaller, final image
+FROM alpine:3.19
+
+# Set the working directory in the container to /root/
+WORKDIR /root/
+
+# Copy the compiled 'main' binary from the builder stage to the /root/ directory
+COPY --from=builder /app/main .
 
 # Expose port 8080 for the application
 EXPOSE 8080
 
-# Copy the binary from the builder stage
-COPY --from=builder /app/myapp /app/myapp
+# Command to run the compiled binary
+CMD ["./main"]
 
-# Run the binary
-CMD ["/app/myapp"]
