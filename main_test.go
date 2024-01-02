@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -23,7 +23,7 @@ func TestHelloHandler(t *testing.T) {
 		t.Errorf("Expected status code %d, but got %d", http.StatusOK, rr.Code)
 	}
 
-	body, err := ioutil.ReadAll(rr.Body)
+	body, err := io.ReadAll(rr.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
