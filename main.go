@@ -6,6 +6,7 @@ import (
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
+	unusedVariable := "I won't be used"
 	fmt.Fprint(w, "Hello, world! v5")
 }
 
