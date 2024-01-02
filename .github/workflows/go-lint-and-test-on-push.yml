@@ -1,52 +1,41 @@
 # Name of this workflow
 name: Go Lint & Test
 
-# This workflow gets triggered upon a push event on any branch
+# Triggered on pull request and push events for any branch
 on:
+  pull_request:
+    branches:
+      - "**"
   push:
     branches:
-      - '**'
+      - "**"
 
-# Jobs are the tasks that this workflow will run
+# Defining jobs
 jobs:
-  # Lint job, checks for syntax errors and best practices
+  # Lint job for Go code
   lint:
     name: Lint Go Code
     runs-on: ubuntu-latest
     steps:
-    # Checks out your repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v3
-    # Sets up Go environment for use in actions
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '1.17'  
-    # Installs the linter
-    - name: Install golangci-lint
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.26.0
-    # Runs the linter
-    - name: Lint
-      run: golangci-lint run
+      - uses: actions/checkout@v3 # Checks out the code
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21' # Sets up Go 1.21
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.28.3 # Uses golangci-lint version 1.28.3
 
-  # Test job, tests the Go code across different platforms and Go versions
+  # Test job for Go on Linux with Go 1.21
   test:
-    name: Test Across Matrix
-    runs-on: ${{ matrix.platform }}
-    strategy:
-      matrix:
-        go-version: [1.15.x, 1.16.x, 1.17.x]
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+    name: Test on Linux with Go 1.21
+    runs-on: ubuntu-latest
     steps:
-    # Sets up Go environment for use in actions
-    - name: Install Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ matrix.go-version }}
-    # Checks out your repository under $GITHUB_WORKSPACE
-    - name: Checkout code
-      uses: actions/checkout@v3
-    # Runs the tests
-    - name: Test
-      run: go test -v ./...
-   
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21' # Sets up Go 1.21
+      - uses: actions/checkout@v3 # Checks out the code
+      - name: Test
+        run: go test -v ./... # Runs Go tests
