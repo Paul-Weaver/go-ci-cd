@@ -4,8 +4,14 @@ name: Build, Publish and Deploy
 # This workflow gets triggered upon a pull request is closed (merged) event
 on:
   pull_request:
-    types: [closed]
-    branches: [main]
+    branches:
+      - "**"
+  push:
+    branches:
+      - "**"
+  # pull_request:
+  #   types: [closed]
+  #   branches: [main]
 
 # Jobs are the tasks that this workflow will run
 jobs:
