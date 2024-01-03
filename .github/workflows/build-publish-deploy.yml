@@ -19,7 +19,6 @@ jobs:
   build-and-publish:
     name: Build and Publish Docker Image
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     steps:
       # Checks out your repository under $GITHUB_WORKSPACE
       - uses: actions/checkout@v4
