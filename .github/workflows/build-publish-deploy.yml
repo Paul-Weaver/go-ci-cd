@@ -16,13 +16,13 @@ jobs:
     if: github.event.pull_request.merged == true
     steps:
       # Checks out your repository under $GITHUB_WORKSPACE
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Builds the Docker image
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag paulweaver101/ci-cd:${{ github.sha }}
       # Publishes the Docker image to DockerHub
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@v4
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: paulweaver101/ci-cd
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS__ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
