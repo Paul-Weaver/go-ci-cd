@@ -49,9 +49,10 @@ jobs:
 
       - name: Update Elastic Beanstalk environment
         run: |
+          VERSION_LABEL=$(echo $GITHUB_SHA | cut -c1-7)
           aws elasticbeanstalk update-environment \
             --environment-name Golang-ci-cd-env \
-            --version-label "1"
+            --version-label $VERSION_LABEL
 
   # Smoke Test job, checks if the application is running
   smoke-test:
